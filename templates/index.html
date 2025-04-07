@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Garbage Detection</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        function checkLogin() {
+            const user = localStorage.getItem("user");
+            if (!user) {
+                window.location.href = "/login";
+            }
+        }
+        function logout() {
+            localStorage.removeItem("user");
+            window.location.href = "/login";
+        }
+        window.onload = checkLogin;
+    </script>
+</head>
+<body class="flex flex-col items-center justify-center h-screen bg-gray-900 text-white">
+    <div class="absolute top-10 text-center">
+        <h1 class="text-5xl font-bold">Garbage Detection using ML & DL</h1>
+    </div>
+    
+    <div class="mt-6 text-center max-w-xl mx-auto bg-gray-800 p-6 rounded-lg shadow-lg">
+        <h2 class="text-2xl font-bold mb-2">Welcome to Smart Garbage Detection</h2>
+        <p class="text-gray-300">
+          Use our AI-powered system to detect waste in real-time using your camera.
+        </p>
+      </div>
+      
+    <div class="mt-20 flex justify-center">
+        <a href="/camera" class="bg-blue-500 text-white p-6 rounded-lg shadow-lg text-xl flex flex-col items-center w-40 h-40">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mb-2" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M4 5a2 2 0 00-2 2v6a2 2 0 002 2h12a2 2 0 002-2V7a2 2 0 00-2-2H4zm0-2h12a4 4 0 014 4v6a4 4 0 01-4 4H4a4 4 0 01-4-4V7a4 4 0 014-4z" />
+            </svg>
+            Camera 1
+        </a>
+    </div>
+    <button onclick="logout()" class="mt-10 bg-red-500 text-white px-6 py-3 rounded-lg text-lg">Logout</button>
+</body>
+</html>

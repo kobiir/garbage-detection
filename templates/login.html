@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script>
+        function onSignIn(response) {
+            const credential = response.credential;
+            const decoded = parseJwt(credential);
+            localStorage.setItem("user", JSON.stringify(decoded));
+            window.location.href = "/dashboard";
+        }
+        function parseJwt(token) {
+            const base64Url = token.split('.')[1];
+            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            const jsonPayload = decodeURIComponent(atob(base64).split('').map(c =>
+                '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+            ).join(''));
+            return JSON.parse(jsonPayload);
+        }
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="flex justify-center items-center h-screen bg-gray-900">
+    <div class="text-center bg-white p-10 rounded-lg shadow-lg">
+        <h1 class="text-2xl font-bold mb-4">Welcome to Garbage Detection</h1>
+        <div id="g_id_onload"
+             data-client_id="625081850064-k6gn11peq3pjo52amuslb66atkott035.apps.googleusercontent.com"
+             data-callback="onSignIn"
+             data-auto_prompt="false">
+        </div>
+        <div class="g_id_signin" data-type="standard"></div>
+    </div>
+</body>
+</html>

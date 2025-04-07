@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Garbage Detection Camera</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script src="{{ url_for('static', filename='camera-integration.js') }}"></script>
+
+    <style>
+        .video-container {
+            position: relative;
+            width: 100%;
+            max-height: 600px;
+        }
+        .video-container video, .video-container canvas {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        #detectionOverlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+        }
+    </style>
+
+    <script>
+        function startCamera() {
+            const video = document.getElementById("video");
+            navigator.mediaDevices.getUserMedia({ 
+                video: { width: { ideal: 1280 }, height: { ideal: 720 }, facingMode: "environment" } 
+            })
+            .then(stream => {
+                video.srcObject = stream;
+                video.onloadedmetadata = () => {
+                    const overlay = document.getElementById("detectionOverlay");
+                    overlay.width = video.videoWidth;
+                    overlay.height = video.videoHeight;
+                };
+            })
+            .catch(err => {
+                console.error("Error accessing webcam:", err);
+                document.getElementById("cameraError").classList.remove("hidden");
+            });
+        }
+
+        function goBack() {
+            window.location.href = "/dashboard";
+        }
+
+        window.onload = startCamera;
+    </script>
+</head>
+<body class="flex flex-col items-center h-screen bg-gray-900 text-white p-4">
+    <div class="w-full max-w-6xl">
+        <h1 class="text-3xl font-bold mb-4 text-center">Garbage Detection Camera</h1>
+
+        <div id="cameraError" class="hidden bg-red-500 text-white p-4 rounded-lg mb-4">
+            Camera access error. Please check your permissions and try again.
+        </div>
+
+        <div class="flex flex-col md:flex-row gap-4">
+            <!-- Camera Feed -->
+            <div class="flex-1">
+                <div class="video-container rounded-lg shadow-lg">
+                    <video id="video" autoplay></video>
+                    <canvas id="detectionOverlay"></canvas>
+                    <div id="status" class="absolute top-2 right-2 px-2 py-1 rounded-md bg-red-500 text-xs">
+                        Disconnected
+                    </div>
+                </div>
+                
+                <div class="flex justify-center mt-4 gap-2">
+                    <button id="startBtn" onclick="startProcessing()" class="bg-green-500 text-white px-4 py-2 rounded-lg">Start Detection</button>
+                    <button id="stopBtn" onclick="stopProcessing()" class="hidden bg-yellow-500 text-white px-4 py-2 rounded-lg">Pause Detection</button>
+                </div>
+            </div>
+
+            <!-- Results Panel -->
+            <div class="flex-1 mt-4 md:mt-0">
+                <div id="result" class="bg-gray-800 p-4 rounded-lg shadow-lg h-full min-h-[300px]">
+                    <p class="text-center text-gray-400">Detection results will appear here</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Image Upload Option -->
+        <div class="mt-6 bg-gray-800 p-4 rounded-lg">
+            <h2 class="text-xl mb-2">Or Upload an Image</h2>
+            <div class="flex gap-2">
+                <input id="fileInput" type="file" accept="image/*" class="rounded-lg flex-1" />
+                <button onclick="uploadImage()" class="bg-purple-500 text-white px-4 py-2 rounded-lg">Analyze</button>
+            </div>
+            <div id="uploadedImage" class="mt-4 relative"></div>
+        </div>
+
+        <div class="flex justify-center mt-6">
+            <button onclick="goBack()" class="bg-red-500 text-white px-6 py-3 rounded-lg text-lg">Back to Dashboard</button>
+        </div>
+    </div>
+</body>
+</html>
